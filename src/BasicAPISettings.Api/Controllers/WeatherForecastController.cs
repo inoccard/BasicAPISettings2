@@ -1,11 +1,13 @@
 using BasicAPISettings.Api.Domain.Models.WeatherForecastAggregate.Entities;
 using BasicAPISettings.Api.Domain.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace BasicAPISettings.Api.Controllers;
 
+//[Authorize]
 [ApiVersion("1.0")]
 [ApiController]
 [Route("api/v{version:apiVersion}/weather-forecast")]
