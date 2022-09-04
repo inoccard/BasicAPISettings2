@@ -23,15 +23,33 @@ public class WeatherForecastController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [SwaggerResponse(StatusCodes.Status200OK, "", typeof(WeatherForecast[]))]
-    [HttpGet("get-weather-forecasts")]
-    public async Task<IActionResult> GetWeatherForecast()
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [HttpGet()]
+    public async Task<IActionResult> Get()
     {
         var wf = await _repository.Query<WeatherForecast>().ToArrayAsync();
 
         if (wf is not null) 
             return Ok(wf);
         else 
-            return BadRequest("Nenhum dado encontrado!");
+            return NotFound("Nenhum dado encontrado!");
+    }
+    
+    /// <summary>
+    /// obtém um WeatherForecast
+    /// </summary>
+    /// <returns></returns>
+    [SwaggerResponse(StatusCodes.Status200OK, "", typeof(WeatherForecast))]
+    [SwaggerResponse(StatusCodes.Status404NotFound)]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(long id)
+    {
+        var wf = await _repository.Query<WeatherForecast>().FirstOrDefaultAsync(w => w.Id == id);
+
+        if (wf is not null) 
+            return Ok(wf);
+        else 
+            return NotFound("Dado não encontrado!");
     }
 
     /// <summary>
@@ -40,7 +58,7 @@ public class WeatherForecastController : ControllerBase
     /// <returns></returns>
     [SwaggerResponse(StatusCodes.Status200OK)]
     [SwaggerResponse(StatusCodes.Status400BadRequest)]
-    [HttpGet("save-weather-forecasts")]
+    [HttpGet("save")]
     public async Task<IActionResult> Save([FromBody] WeatherForecast weatherForecast)
     {
         await _repository.Add(weatherForecast);
@@ -57,7 +75,7 @@ public class WeatherForecastController : ControllerBase
     /// <returns></returns>
     [SwaggerResponse(StatusCodes.Status200OK)]
     [SwaggerResponse(StatusCodes.Status400BadRequest)]
-    [HttpGet("delete-weather-forecasts")]
+    [HttpGet("delete")]
     public async Task<IActionResult> Delete([FromBody] WeatherForecast weatherForecast)
     {
         _repository.Remove(weatherForecast);
