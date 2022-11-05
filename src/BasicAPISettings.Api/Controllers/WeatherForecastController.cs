@@ -31,12 +31,12 @@ public class WeatherForecastController : ControllerBase
     {
         var wf = await _repository.Query<WeatherForecast>().ToArrayAsync();
 
-        if (wf is not null) 
+        if (wf is not null)
             return Ok(wf);
-        else 
+        else
             return NotFound("Nenhum dado encontrado!");
     }
-    
+
     /// <summary>
     /// obtém um WeatherForecast
     /// </summary>
@@ -48,9 +48,9 @@ public class WeatherForecastController : ControllerBase
     {
         var wf = await _repository.Query<WeatherForecast>().FirstOrDefaultAsync(w => w.Id == id);
 
-        if (wf is not null) 
+        if (wf is not null)
             return Ok(wf);
-        else 
+        else
             return NotFound("Dado não encontrado!");
     }
 
@@ -60,7 +60,7 @@ public class WeatherForecastController : ControllerBase
     /// <returns></returns>
     [SwaggerResponse(StatusCodes.Status200OK)]
     [SwaggerResponse(StatusCodes.Status400BadRequest)]
-    [HttpGet("save")]
+    [HttpPost("save")]
     public async Task<IActionResult> Save([FromBody] WeatherForecast weatherForecast)
     {
         await _repository.Add(weatherForecast);
@@ -70,14 +70,39 @@ public class WeatherForecastController : ControllerBase
         else
             return BadRequest("Não foi possível salvar os dados!");
     }
-    
+
+    /// <summary>
+    /// adicionar WeatherForecast
+    /// </summary>
+    /// <returns></returns>
+    [SwaggerResponse(StatusCodes.Status200OK)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest)]
+    [HttpPut("update")]
+    public async Task<IActionResult> Update([FromBody] WeatherForecast weatherForecast)
+    {
+        var weatherForecastOld = await _repository.Query<WeatherForecast>().FirstOrDefaultAsync(w => w.Id == weatherForecast.Id);
+
+        if (weatherForecastOld is null) await _repository.Add(weatherForecast);
+        else
+        {
+            weatherForecastOld.Update(weatherForecast.Date, weatherForecast.TemperatureC, weatherForecast.Summary);
+
+            _repository.Update(weatherForecastOld);
+        }
+
+        if (await _repository.Commit())
+            return Ok("Dados salvos com sucesso!");
+        else
+            return BadRequest("Não foi possível salvar os dados!");
+    }
+
     /// <summary>
     /// excluir WeatherForecast
     /// </summary>
     /// <returns></returns>
     [SwaggerResponse(StatusCodes.Status200OK)]
     [SwaggerResponse(StatusCodes.Status400BadRequest)]
-    [HttpGet("delete")]
+    [HttpDelete("delete")]
     public async Task<IActionResult> Delete([FromBody] WeatherForecast weatherForecast)
     {
         _repository.Remove(weatherForecast);

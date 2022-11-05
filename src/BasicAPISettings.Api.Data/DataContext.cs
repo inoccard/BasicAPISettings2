@@ -42,6 +42,8 @@ namespace BasicAPISettings.Api.Data
 
         public new async Task Add<T>(T entity) where T : class => await base.Set<T>().AddAsync(entity);
 
+        public new void Update<T>(T entity) where T : class => base.Set<T>().Update(entity);
+
         public async Task AddRange<T>(T entity) where T : class => await base.Set<T>().AddRangeAsync(entity);
 
         public new void Remove<T>(T item) where T : class => base.Remove(item);
