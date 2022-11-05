@@ -26,7 +26,7 @@ public class WeatherForecastController : ControllerBase
     /// <returns></returns>
     [SwaggerResponse(StatusCodes.Status200OK, "", typeof(WeatherForecast[]))]
     [SwaggerResponse(StatusCodes.Status404NotFound)]
-    [HttpGet()]
+    [HttpGet]
     public async Task<IActionResult> Get()
     {
         var wf = await _repository.Query<WeatherForecast>().ToArrayAsync();
